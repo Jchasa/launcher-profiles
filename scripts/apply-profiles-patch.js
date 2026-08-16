@@ -3,15 +3,23 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 
+function normalize(text) {
+  return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+}
+
 function edit(file, marker, replacement) {
   const filePath = path.join(root, file);
-  let text = fs.readFileSync(filePath, 'utf8');
-  if (text.includes(replacement)) return;
-  if (!text.includes(marker)) {
+  let text = normalize(fs.readFileSync(filePath, 'utf8'));
+  const normalizedMarker = normalize(marker);
+  const normalizedReplacement = normalize(replacement);
+
+  if (text.includes(normalizedReplacement)) return;
+  if (!text.includes(normalizedMarker)) {
     throw new Error(`Profiles patch marker not found in ${file}: ${marker}`);
   }
-  text = text.replace(marker, replacement);
-  fs.writeFileSync(filePath, text);
+
+  text = text.replace(normalizedMarker, normalizedReplacement);
+  fs.writeFileSync(filePath, text.replace(/\n/g, '\r\n'));
 }
 
 // Shared request API.
@@ -66,7 +74,7 @@ edit(
 // Navigation path.
 edit(
   'src/shared/Paths.ts',
-  '  DOWNLOADS  = \'/downloads\',',
+  "  DOWNLOADS  = '/downloads',",
   "  DOWNLOADS  = '/downloads',\n  PROFILES   = '/profiles',"
 );
 
