@@ -4,7 +4,7 @@ import { FlashpointProfile, ProfileStore } from '@shared/profiles/types';
 import { uuid } from './util/uuid';
 
 const STORE_FILENAME = 'profiles.json';
-const STORE_VERSION = 1;
+const STORE_VERSION = 2;
 
 function createProfile(name: string): FlashpointProfile {
   const now = new Date().toISOString();
@@ -29,16 +29,34 @@ export class ProfileManager {
 
   private load(): ProfileStore {
     try {
-      const data = fs.readJsonSync(this.filePath) as Partial<ProfileStore>;
-      if (data.version === STORE_VERSION && Array.isArray(data.profiles) && data.profiles.length > 0) {
+      const data = fs.readJsonSync(this.filePath) as Partial<ProfileStore> & { version?: number };
+      if (Array.isArray(data.profiles) && data.profiles.length > 0) {
         const activeProfileId = data.profiles.some(p => p.id === data.activeProfileId)
           ? data.activeProfileId as string
           : data.profiles[0].id;
-        return {
-          version: STORE_VERSION,
-          activeProfileId,
-          profiles: data.profiles
-        };
+
+        if (data.version === STORE_VERSION) {
+          return {
+            version: STORE_VERSION,
+            activeProfileId,
+            favoritesInitialized: data.favoritesInitialized === true,
+            profiles: data.profiles
+          };
+        }
+
+        // Migrate the MVP profile store. Favorites are imported from the
+        // existing Flashpoint Favorites playlist on the first playlist sync.
+        if (data.version === 1) {
+          const store: ProfileStore = {
+            version: STORE_VERSION,
+            activeProfileId,
+            favoritesInitialized: false,
+            profiles: data.profiles
+          };
+          this.store = store;
+          this.save();
+          return store;
+        }
       }
     } catch {
       // First run or an unreadable profile store.
@@ -48,6 +66,7 @@ export class ProfileManager {
     const store: ProfileStore = {
       version: STORE_VERSION,
       activeProfileId: profile.id,
+      favoritesInitialized: false,
       profiles: [profile]
     };
     this.store = store;
@@ -126,6 +145,25 @@ export class ProfileManager {
     if (index < 0) throw new Error('Profile does not exist');
 
     this.store.profiles.splice(index, 1);
+    this.save();
+  }
+
+  isFavoritesInitialized(): boolean {
+    return this.store.favoritesInitialized;
+  }
+
+  activeFavoriteIds(): string[] {
+    return [...this.active().favorites];
+  }
+
+  initializeFavorites(gameIds: string[]): void {
+    if (this.store.favoritesInitialized) return;
+
+    const profile = this.store.profiles.find(p => p.id === this.store.activeProfileId);
+    if (!profile) throw new Error('Active profile does not exist');
+
+    profile.favorites = [...new Set(gameIds)];
+    this.store.favoritesInitialized = true;
     this.save();
   }
 
