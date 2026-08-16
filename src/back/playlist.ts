@@ -67,6 +67,9 @@ export async function addPlaylistGame(state: BackState, playlistId: string, game
           notes: ''
         }
       );
+      if (playlist.title.includes('Favorites')) {
+        state.profileManager.setFavorite(gameId, true);
+      }
       await updatePlaylist(state, oldPlaylist, playlist);
     }
   } else {
@@ -98,6 +101,9 @@ export async function deletePlaylistGame(state: BackState, playlistId: string, g
     if (gameIdx !== -1) {
       const oldPlaylist = deepCopy(playlist);
       const removedGame = playlist.games.splice(gameIdx, 1);
+      if (playlist.title.includes('Favorites')) {
+        state.profileManager.setFavorite(gameId, false);
+      }
       await updatePlaylist(state, oldPlaylist, playlist);
       return removedGame[0];
     } else {
@@ -124,7 +130,7 @@ export async function importPlaylist(state: BackState, filePath: string, library
         const dialogFunc = state.socketServer.showMessageBoxBack(state, event.client);
         const strings = state.languageContainer;
         const dialogId = await dialogFunc({
-          message:  `${formatString(strings.dialog.importedPlaylistAlreadyExists, existingPlaylist.title)}\n\n${strings.dialog.importPlaylistAs} ${newPlaylist.title}?`,
+          message:  `${formatString(strings.dialog.importedPlaylistAlreadyExists, existingPlaylist.title)}\n\n${formatString(strings.dialog.importPlaylistAs, newPlaylist.title)}?`,
           buttons: [strings.misc.yes, strings.misc.no, strings.dialog.cancel]
         });
         const result = (await awaitDialog(state, dialogId)).buttonIdx;
