@@ -22,6 +22,13 @@ function edit(file, marker, replacement) {
   fs.writeFileSync(filePath, text.replace(/\n/g, '\r\n'));
 }
 
+// Import the profile-aware playlist projection into the backend request handlers.
+edit(
+  'src/back/responses.ts',
+  `  filterPlaylists,\n  getPlaylistGame,`,
+  `  filterPlaylists,\n  getProfileAwarePlaylists,\n  getPlaylistGame,`
+);
+
 // The normal Flashpoint Favorites playlist remains the UI-facing playlist, but its
 // contents are projected from the active profile instead of being persisted as a
 // shared global favorite list.
