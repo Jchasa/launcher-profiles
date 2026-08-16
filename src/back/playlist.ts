@@ -130,7 +130,7 @@ export async function importPlaylist(state: BackState, filePath: string, library
         const dialogFunc = state.socketServer.showMessageBoxBack(state, event.client);
         const strings = state.languageContainer;
         const dialogId = await dialogFunc({
-          message:  `${formatString(strings.dialog.importedPlaylistAlreadyExists, existingPlaylist.title)}\n\n${formatString(strings.dialog.importPlaylistAs, newPlaylist.title)}?`,
+          message:  `${formatString(strings.dialog.importedPlaylistAlreadyExists, existingPlaylist.title)}\n\n${strings.dialog.importPlaylistAs} ${newPlaylist.title}?`,
           buttons: [strings.misc.yes, strings.misc.no, strings.dialog.cancel]
         });
         const result = (await awaitDialog(state, dialogId)).buttonIdx;
