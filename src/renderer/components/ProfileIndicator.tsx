@@ -13,12 +13,15 @@ export const ProfileIndicator: React.FC = () => {
       const active = result.profiles.find(profile => profile.id === result.activeProfileId);
       if (active) setName(active.name);
     } catch {
-      // Keep the neutral label if the backend is not ready yet.
+      // Keep the current label if the backend is not ready yet.
     }
   }, []);
 
   React.useEffect(() => {
     void load();
+    const handleProfileChange = () => { void load(); };
+    window.addEventListener('flashpoint-profile-changed', handleProfileChange);
+    return () => window.removeEventListener('flashpoint-profile-changed', handleProfileChange);
   }, [load]);
 
   return (
