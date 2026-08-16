@@ -3,11 +3,7 @@
   "version": "14.0.3",
   "description": "A desktop application used to browse, manage and play games from Flashpoint Archive",
   "main": "build/main/index.js",
-  "config": {
-    "cacheKey": 3,
-    "forceUpdate": 1,
-    "installed": false
-  },
+  "config": {"cacheKey": 3, "forceUpdate": 1, "installed": false},
   "scripts": {
     "start": "electron ./build/main/index.js",
     "prestart": "node scripts/apply-profiles-patch.js && node scripts/apply-profile-indicator-patch.js && node scripts/apply-profile-favorites-patch.js && node scripts/apply-profile-playlists-patch.js",
@@ -26,10 +22,7 @@
     "postinstall": "electron-builder install-app-deps & gulp extInstall",
     "clean": "gulp clean"
   },
-  "author": {
-    "name": "Jesper Gustafsson",
-    "email": "jespergustafssons@gmail.com"
-  },
+  "author": {"name": "Jesper Gustafsson", "email": "jespergustafssons@gmail.com"},
   "license": "MIT",
   "dependencies": {
     "@electron/remote": "2.0.8",
@@ -66,12 +59,11 @@
     "redux": "4.0.5",
     "redux-devtools-extension": "2.13.8",
     "reflect-metadata": "0.1.10",
-    "remark-gfm": "2.0.1",
+    "remark-gfm": "2.0.0",
     "tail": "2.0.3",
     "terminate": "2.6.1",
-    "tree-kill": "2.6.1",
-    "typesafe-actions": "4.4.2",
     "tree-kill": "^1.2.2",
+    "typesafe-actions": "4.4.2",
     "uuid": "3.3.2",
     "uuid-validate": "0.0.3",
     "which": "1.3.1",
@@ -126,7 +118,5 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.16.0"
   },
-  "optionalDependencies": {
-    "fsevents": "2.1.3"
-  }
+  "optionalDependencies": {"fsevents": "2.1.3"}
 }
