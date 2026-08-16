@@ -88,6 +88,7 @@ export const ProfilesPage: React.FC = () => {
     try {
       await window.Shared.back.request(BackIn.SWITCH_PROFILE, profileId);
       await loadProfiles();
+      window.dispatchEvent(new Event('flashpoint-profile-changed'));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
