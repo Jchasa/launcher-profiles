@@ -13,7 +13,8 @@ export type ProfileHistoryEntry = {
 };
 
 export type ProfileStore = {
-  version: 1;
+  version: 2;
   activeProfileId: string;
+  favoritesInitialized: boolean;
   profiles: FlashpointProfile[];
 };
